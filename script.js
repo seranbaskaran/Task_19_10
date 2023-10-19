@@ -286,27 +286,29 @@ let data={
     ];
   }
 getData(data.data.teams.teama, data.data.teams.teamb);
-function displayPlayer(teamplayers){
+function displayPlayer(teamplayers) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
     teamplayers.forEach(player => {
         const row = document.createElement('tr');
-        row.setAttribute('class','row');
-        row.addEventListener('click',()=>{
-            console.log(player)
+        row.setAttribute('class', 'row');
+        row.addEventListener('click', () => {
+            console.log(player);
         });
-        const playerType=getPlayerType(player.role);
-        //console.log(getPlayerType(player.role));
+        const playerType = getPlayerType(player.role);
+
+        const thumbUrl = player.team_id === "teama" ? data.data.teams.teama.thumb_url : data.data.teams.teamb.thumb_url;
+
         row.innerHTML = `
-            <td></td>
+            <td><img src="${thumbUrl}" alt="Player Image" width="50"></td>
             <td>${player.name}</td>
             <td>${player.player_id}</td>
             <td>${playerType}</td>
-           `
+        `;
         tableBody.appendChild(row);
     })
-
 }
+
 function getPlayerType(playervalue){
     switch (playervalue) {
                 case 'ar':
