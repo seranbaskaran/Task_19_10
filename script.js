@@ -252,92 +252,100 @@ let data={
     }
   }
 }
+const allPlayer = [];
+let teamData = data['data']['teams'];
 
-  const allPalyer=[];
-  let teamData=data['data']['teams']
-  for(i in teamData)
-  {
-    for(j in teamData[i]['squads'])
-    {
-        teamData[i]['squads'][j]['team']=data['data']['teams'][i]['title']
-        allPalyer.push(teamData[i]['squads'][j]);
+for (let i in teamData) {
+    for (let j in teamData[i]['squads']) {
+        teamData[i]['squads'][j]['team'] = data['data']['teams'][i]['title'];
+        allPlayer.push(teamData[i]['squads'][j]);
     }
-  }
-let allWicketKeepers=allPalyer.filter(player => player.role === "wk")
-let allBatsmans=allPalyer.filter(player => player.role === "bat");
-let allAllRounders=allPalyer.filter(player => player.role === "ar");
-let allBowler=allPalyer.filter(player => player.role === "bowl");
-let selectedPlayer=[];
-function displayPlayer(teamplayers) {
-  const tableBody = document.getElementById('table-body');
-  tableBody.innerHTML = '';
-  teamplayers.forEach(player => {
-      const row = document.createElement('tr');
-      row.setAttribute('class', 'row');
-      row.addEventListener('click', () => {
-          console.log(player);
-          selectedPlayer.push(player);
-          showPlayerInSection(player);
-      });
-      const playerType = getPlayerType(player.role);
-      const thumbUrl = player.team === "New Zealand" ? data.data.teams.teama.thumb_url : data.data.teams.teamb.thumb_url;
-      row.innerHTML = `
-          <td><img src="${thumbUrl}" alt="Player Image" width="50"></td>
-          <td>${player.name}</td>
-          <td>${player.player_id}</td>
-          <td><img src="${playerType}" alt="Player Image" width="50"></td>
-      `;
-      tableBody.appendChild(row);
-  })
 }
 
-function getPlayerType(playervalue){
-  switch (playervalue) {
-              case 'ar':
-                  return "./pictures/allRounder.png";
-              case 'bat':
-                  return "./pictures/Batsman.png";
-              case 'wk':
-                  return "./pictures/keeper.png";
-              case 'bowl':
-                  return "./pictures/bowler.png";
-  }            
+const roleFilters = {}; // Create an object to store players by role
+
+// Loop through the players and group them by role
+allPlayer.forEach(player => {
+    if (!roleFilters[player.role]) {
+        roleFilters[player.role] = [];
+    }
+    roleFilters[player.role].push(player);
+});
+
+let selectedPlayers = [];
+
+function displayPlayersByRole(role) {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
+
+    roleFilters[role].forEach(player => {
+        const row = document.createElement('tr');
+        row.setAttribute('class', 'row');
+        row.addEventListener('click', () => {
+            selectedPlayers.push(player);
+            showPlayerInSection(player);
+        });
+
+        const playerTypeImage = getPlayerTypeImage(player.role);
+        const thumbUrl = player.team === "New Zealand" ? teamData.teama.thumb_url : teamData.teamb.thumb_url;
+
+        row.innerHTML = `
+            <td><img src="${thumbUrl}" alt="Player Image" width="50"></td>
+            <td>${player.name}</td>
+            <td>${player.player_id}</td>
+            <td><img src="${playerTypeImage}" alt="Player Type" width="50"></td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+function getPlayerTypeImage(playerRole) {
+    switch (playerRole) {
+        case 'ar':
+            return "https://png.pngtree.com/png-clipart/20210225/ourmid/pngtree-wooden-cricket-bat-clipart-sporting-goods-png-image_2957536.png";
+        case 'bat':
+            return "https://images.vexels.com/media/users/3/316363/isolated/preview/02c4382e5d08daec77666410ddae3e6a-cricket-bat.png";
+        case 'wk':
+            return "https://cdn.iconscout.com/icon/premium/png-256-thumb/wicket-keeper-gloves-4399285-3757032.png?f=webp";
+        case 'bowl':
+            return "https://e7.pngegg.com/pngimages/488/27/png-clipart-cricket-balls-tennis-balls-stump-cricket-sport-sphere.png";
+    }
 }
 
 function showPlayerInSection(player) {
-  const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
-  const playerType = getPlayerTypestr(player.role);
+    const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
+    const playerType = getPlayerTypeStr(player.role);
 
- 
-  const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
+    const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
 
-  const playerDiv = document.createElement('div');
-  playerDiv.className = 'player-info';
+    const playerDiv = document.createElement('div');
+    playerDiv.className = 'player-info';
 
-  const playerImage = document.createElement('img');
-  playerImage.src = '//staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg'; // You need to add a property for the player's image URL
+    const playerImage = document.createElement('img');
+    playerImage.src = '//staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg'; // Assuming you have a property for player images
 
-  const playerName = document.createElement('p');
-  playerName.className = 'player-name';
-  playerName.textContent = player.name;
+    const playerName = document.createElement('p');
+    playerName.className = 'player-name';
+    playerName.textContent = player.name;
 
-  playerDiv.appendChild(playerImage);
-  playerDiv.appendChild(playerName);
-  playerSection.appendChild(playerDiv);
+    playerDiv.appendChild(playerImage);
+    playerDiv.appendChild(playerName);
+    playerSection.appendChild(playerDiv);
 }
 
 // Function to get the player type
-function getPlayerTypestr(playerRole) {
-  switch (playerRole) {
-    case 'ar':
-      return 'all-rounder';
-    case 'bat':
-      return 'batter';
-    case 'wk':
-      return 'wicket-keeper';
-    case 'bowl':
-      return 'bowler';
-    default:
-      return 'other'; 
-  }
+function getPlayerTypeStr(playerRole) {
+    switch (playerRole) {
+        case 'ar':
+            return 'all-rounder';
+        case 'bat':
+            return 'batter';
+        case 'wk':
+            return 'wicket-keeper';
+        case 'bowl':
+            return 'bowler';
+        default:
+            return 'other';
+    }
 }
