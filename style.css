@@ -1,42 +1,46 @@
- body, h1, h2, p, ul, li {
+*{
+    margin:0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+body, h1, h2, p, ul, li {
     margin: 0;
     padding: 0;
 }
 
 body {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     height: 100vh;
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
     background-image: url('https://as2.ftcdn.net/v2/jpg/01/31/27/99/1000_F_131279986_ToLS0CR4O2VBc2vk7qNI7HUxeQd9refB.jpg');
     background-size: cover;
-}
 
+}
+.head-title{
+    padding:10px;
+    text-align: center;
+}
 .main {
     width: 70%;
-    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0px auto;
     padding: 20px;
-    background-color: #fff;
-    background: rgb(30 27 26 / 50%);
-    border-radius: 5px;
+    background: rgba(30, 27, 26, 0.5);
+    border-radius: 5px
 }
-
 
 .choosed-player{
-    background-image: url('');
+    width: 50%;
+    background-image: url('./pictures/Ground.png');
 }
 
-
 .player-details {
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ccc;
-    margin: 20px;
-    background-color: #f5f5f5;
+    width: 50%;
+    /* border: 1px solid rgb(204, 204, 204); */
+    background-color: rgb(245, 245, 245);
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: rgb(0 0 0 / 10%) 0px 2px 4px;
 }
 
 .headers {
@@ -96,4 +100,49 @@ tr.row:nth-child(even) {
     padding: 5px;
 }
 
+.choosed-player {
+    padding: 20px;
+}
 
+.fantasy-tip-row{
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.player-position-info {
+    
+    font-weight: bold;
+    padding: 5px;
+}
+.players-list {
+    width:100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+.player-info {
+    text-align: center;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.player-image {
+    max-width: 50px;
+    max-height: 60px;
+}
+.player-name{
+    font-size: 10px;
+}
+.captain-icon {
+    width: 20px;
+    height: 24px;
+}
+.vice-captain-icon {
+    width: 20px;
+    height: 24px;
+}
