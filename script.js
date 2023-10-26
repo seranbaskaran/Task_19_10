@@ -313,26 +313,62 @@ function getPlayerTypeImage(playerRole) {
     }
 }
 
+// function showPlayerInSection(player) {
+//     const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
+//     const playerType = getPlayerTypeStr(player.role);
+
+//     const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
+
+//     const playerDiv = document.createElement('div');
+//     playerDiv.className = 'player-info';
+
+//     const playerImage = document.createElement('img');
+//     playerImage.src = player.team === "New Zealand" ? 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player2.svg' : 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg';
+//     const playerName = document.createElement('p');
+//     playerName.className = 'player-name';
+//     playerName.textContent = player.name;
+
+//     playerDiv.appendChild(playerImage);
+//     playerDiv.appendChild(playerName);
+//     playerSection.appendChild(playerDiv);
+// }
 function showPlayerInSection(player) {
-    const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
-    const playerType = getPlayerTypeStr(player.role);
+  const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
+  const playerType = getPlayerTypeStr(player.role);
 
-    const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
+  const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
 
-    const playerDiv = document.createElement('div');
-    playerDiv.className = 'player-info';
+  const playerDiv = document.createElement('div');
+  playerDiv.className = 'player-info';
 
-    const playerImage = document.createElement('img');
-    playerImage.src = '//staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg'; // Assuming you have a property for player images
+  const playerImage = document.createElement('img');
+  playerImage.src = player.team === "New Zealand" ? 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player2.svg' : 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg';
+  const playerName = document.createElement('p');
+  playerName.className = 'player-name';
+  playerName.textContent = player.name;
 
-    const playerName = document.createElement('p');
-    playerName.className = 'player-name';
-    playerName.textContent = player.name;
+  const removeButton = document.createElement('button');
+  removeButton.innerText = 'Remove';
+  removeButton.addEventListener('click', () => {
+      removePlayer(player);
+      playerDiv.remove();
+  });
 
-    playerDiv.appendChild(playerImage);
-    playerDiv.appendChild(playerName);
-    playerSection.appendChild(playerDiv);
+  playerDiv.appendChild(playerImage);
+  playerDiv.appendChild(playerName);
+  playerDiv.appendChild(removeButton);
+  playerSection.appendChild(playerDiv);
 }
+
+function removePlayer(player) {
+  const index = selectedPlayers.findIndex(p => p.player_id === player.player_id);
+  if (index !== -1) {
+      selectedPlayers.splice(index, 1);
+  }
+}
+
+
+
 
 // Function to get the player type
 function getPlayerTypeStr(playerRole) {
