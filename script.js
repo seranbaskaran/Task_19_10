@@ -258,7 +258,8 @@ let teamData = data['data']['teams'];
 for (let i in teamData) {
     for (let j in teamData[i]['squads']) {
         teamData[i]['squads'][j]['team'] = data['data']['teams'][i]['title'];
-        allPlayer.push(teamData[i]['squads'][j]);
+        allPlayer.push(Object.assign(teamData[i]['squads'][j],{visible:false},{captain:false},{vicecaptain:false}));
+
     }
 }
 
@@ -266,8 +267,9 @@ const roleFilters = {}; // Create an object to store players by role
 
 // Loop through the players and group them by role
 allPlayer.forEach(player => {
-    if (!roleFilters[player.role]) {
-        roleFilters[player.role] = [];
+    if (!roleFilters[player.role]) 
+    {
+      roleFilters[player.role] = [];
     }
     roleFilters[player.role].push(player);
 });
@@ -277,25 +279,34 @@ let selectedPlayers = [];
 function displayPlayersByRole(role) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
-
     roleFilters[role].forEach(player => {
         const row = document.createElement('tr');
-        row.setAttribute('class', 'row');
+        row.setAttribute('class', 'row1');
         row.addEventListener('click', () => {
+            if(player.visible==true){
+              player.visible=false;
+              displayPlayersByRole(role);
+              showPlayerInSection(allPlayer);
+              row.style.backgroundColor='none';
+              removePlayer(player);
+              return;
+            }
+            player.visible=true;
+            player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
             selectedPlayers.push(player);
-            showPlayerInSection(player);
+            showPlayerInSection(allPlayer);
+            console.log(player)
         });
-
+        player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
         const playerTypeImage = getPlayerTypeImage(player.role);
         const thumbUrl = player.team === "New Zealand" ? teamData.teama.thumb_url : teamData.teamb.thumb_url;
-
+       
         row.innerHTML = `
             <td><img src="${thumbUrl}" alt="Player Image" width="50"></td>
             <td>${player.name}</td>
             <td>${player.player_id}</td>
-            <td><img src="${playerTypeImage}" alt="Player Type" width="50"></td>
+            <td><img src="${playerTypeImage}"alt="Player Type" width="50"></td>
         `;
-
         tableBody.appendChild(row);
     });
 }
@@ -313,29 +324,22 @@ function getPlayerTypeImage(playerRole) {
     }
 }
 
-// function showPlayerInSection(player) {
-//     const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
-//     const playerType = getPlayerTypeStr(player.role);
-
-//     const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
-
-//     const playerDiv = document.createElement('div');
-//     playerDiv.className = 'player-info';
-
-//     const playerImage = document.createElement('img');
-//     playerImage.src = player.team === "New Zealand" ? 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player2.svg' : 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg';
-//     const playerName = document.createElement('p');
-//     playerName.className = 'player-name';
-//     playerName.textContent = player.name;
-
-//     playerDiv.appendChild(playerImage);
-//     playerDiv.appendChild(playerName);
-//     playerSection.appendChild(playerDiv);
-// }
-function showPlayerInSection(player) {
+function showPlayerInSection(allPlayer) {
   const choosedPlayerDiv = document.querySelector('.single-fantasy-tip');
+  const playerSections = {
+    ar: choosedPlayerDiv.querySelector('.all-rounder-section'),
+    bat: choosedPlayerDiv.querySelector('.batter-section'),
+    wk: choosedPlayerDiv.querySelector('.wicket-keeper-section'),
+    bowl: choosedPlayerDiv.querySelector('.bowler-section'),
+  };
+  for (const section in playerSections) {
+    playerSections[section].innerHTML = '';
+  }
+  allPlayer.forEach((player)=>{
+    if(player.visible==false){
+      return;
+    }
   const playerType = getPlayerTypeStr(player.role);
-
   const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
 
   const playerDiv = document.createElement('div');
@@ -347,17 +351,19 @@ function showPlayerInSection(player) {
   playerName.className = 'player-name';
   playerName.textContent = player.name;
 
-  const removeButton = document.createElement('button');
-  removeButton.innerText = 'Remove';
-  removeButton.addEventListener('click', () => {
+  /* const removeButton = document.createElement('button');
+  removeButton.innerText = 'Remove'; 
+  playerDiv.addEventListener('click', () => {
       removePlayer(player);
+      player.visible=false;
       playerDiv.remove();
-  });
+  }); */
 
   playerDiv.appendChild(playerImage);
   playerDiv.appendChild(playerName);
-  playerDiv.appendChild(removeButton);
+  //playerDiv.appendChild(removeButton);
   playerSection.appendChild(playerDiv);
+  })
 }
 
 function removePlayer(player) {
@@ -366,10 +372,6 @@ function removePlayer(player) {
       selectedPlayers.splice(index, 1);
   }
 }
-
-
-
-
 // Function to get the player type
 function getPlayerTypeStr(playerRole) {
     switch (playerRole) {
@@ -385,3 +387,86 @@ function getPlayerTypeStr(playerRole) {
             return 'other';
     }
 }
+// Add this code at the end of your JavaScript file
+document.getElementById("nextButton").addEventListener("click", () => {
+  // Get the modal and modal content elements
+  const modal = document.getElementById("myModal");
+  const modalBody = modal.querySelector(".modal-body");
+
+  // Clear the modal body content
+  modalBody.innerHTML = "";
+
+  // Create a form for captain and vice-captain selection
+  const captainSelectionForm = document.createElement("form");
+  captainSelectionForm.id = "captainSelectionForm";
+
+  // Loop through the selected players and create radio buttons
+  selectedPlayers.forEach((player, index) => {
+      const playerDiv = document.createElement("div");
+      playerDiv.className = "selected-player";
+
+      const playerImage = document.createElement('img');
+      playerImage.src = player.team === "New Zealand" ? 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player2.svg' : 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg';
+      const playerName = document.createElement("p");
+      playerName.textContent = `${index + 1}. ${player.name} - ${player.team}`;
+
+      const playerSelection=document.createElement('div');
+      playerSelection.className="playerSelection";
+      const captainRadio = document.createElement("input");
+      captainRadio.type = "radio";
+      captainRadio.name = "captain";
+      captainRadio.value = player.player_id;
+      captainRadio.id = `captain${index}`;
+
+      const captainLabel = document.createElement("label");
+      captainLabel.htmlFor = `captain${index}`;
+      captainLabel.textContent = "Captain";
+
+      const viceCaptainRadio = document.createElement("input");
+      viceCaptainRadio.type = "radio";
+      viceCaptainRadio.name = "viceCaptain";
+      viceCaptainRadio.value = player.player_id;
+      viceCaptainRadio.id = `viceCaptain${index}`;
+
+      const viceCaptainLabel = document.createElement("label");
+      viceCaptainLabel.htmlFor = `viceCaptain${index}`;
+      viceCaptainLabel.textContent = "Vice Captain";
+      playerSelection.appendChild(captainRadio);
+      playerSelection.appendChild(captainLabel);
+      playerSelection.appendChild(viceCaptainRadio);
+      playerSelection.appendChild(viceCaptainLabel);
+      // Append elements to the playerDiv
+      playerDiv.appendChild(playerImage);
+      playerDiv.appendChild(playerName);
+      playerDiv.appendChild(playerSelection);
+      // Append the playerDiv to the form
+      captainSelectionForm.appendChild(playerDiv);
+  });
+  // Append the form to the modal body
+  modalBody.appendChild(captainSelectionForm);
+  // Display the modal
+   modal.style.display = "block";
+  // Handle form submission
+  captainSelectionForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Get the selected captain and vice-captain values
+      const captainValue = document.querySelector('input[name="captain"]:checked').value;
+      const viceCaptainValue = document.querySelector('input[name="viceCaptain"]:checked').value;
+      allPlayer.forEach(player1=>{
+        player1.captain=false;
+        player1.vicecaptain=false;
+        if(player1.player_id=captainValue){
+          player1.captain=true;
+        }
+        if(player1.player_id=vicecaptain){
+          player1.vicecaptain=true;
+        }
+      })
+      // You can now use captainValue and viceCaptainValue as needed
+
+      // Close the modal
+      
+      modal.style.display = "none";
+  });
+});
