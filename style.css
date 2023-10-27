@@ -133,6 +133,7 @@ tr.row1:nth-child(even) {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 .player-image {
     max-width: 50px;
@@ -149,7 +150,11 @@ tr.row1:nth-child(even) {
     width: 20px;
     height: 24px;
 }
-
+.captain-logo, .viceCaptain-logo{
+    position: absolute;
+    right: 10%;
+    top: 0px;
+}
 
 
 .modal-dialog {

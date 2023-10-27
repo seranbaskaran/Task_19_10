@@ -284,6 +284,7 @@ function displayPlayersByRole(role) {
         row.setAttribute('class', 'row1');
         row.addEventListener('click', () => {
             if(player.visible==true){
+              validatePlayersCount();
               player.visible=false;
               displayPlayersByRole(role);
               showPlayerInSection(allPlayer);
@@ -291,11 +292,12 @@ function displayPlayersByRole(role) {
               removePlayer(player);
               return;
             }
+            validatePlayersCount();
             player.visible=true;
             player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
             selectedPlayers.push(player);
             showPlayerInSection(allPlayer);
-            console.log(player)
+            //console.log(player)
         });
         player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
         const playerTypeImage = getPlayerTypeImage(player.role);
@@ -341,7 +343,6 @@ function showPlayerInSection(allPlayer) {
     }
   const playerType = getPlayerTypeStr(player.role);
   const playerSection = choosedPlayerDiv.querySelector(`.${playerType}-section`);
-
   const playerDiv = document.createElement('div');
   playerDiv.className = 'player-info';
 
@@ -350,24 +351,31 @@ function showPlayerInSection(allPlayer) {
   const playerName = document.createElement('p');
   playerName.className = 'player-name';
   playerName.textContent = player.name;
-
-  /* const removeButton = document.createElement('button');
-  removeButton.innerText = 'Remove'; 
-  playerDiv.addEventListener('click', () => {
-      removePlayer(player);
-      player.visible=false;
-      playerDiv.remove();
-  }); */
+    if(player.captain==true){
+      let captainImg=document.createElement('img');
+      captainImg.src='https://static.sportskeeda.com/cricket_images/fantasy_v2/captain-icon-new.svg';
+      captainImg.className='captain-logo';
+      playerDiv.appendChild(captainImg);
+    }
+    if(player.vicecaptain==true){
+      let viceCaptainImg=document.createElement('img');
+      viceCaptainImg.src='https://static.sportskeeda.com/cricket_images/fantasy_v2/vice-captain-icon-new.svg';
+      viceCaptainImg.className='viceCaptain-logo';
+      playerDiv.appendChild(viceCaptainImg);
+    }
 
   playerDiv.appendChild(playerImage);
   playerDiv.appendChild(playerName);
-  //playerDiv.appendChild(removeButton);
+
   playerSection.appendChild(playerDiv);
   })
 }
 
 function removePlayer(player) {
-  const index = selectedPlayers.findIndex(p => p.player_id === player.player_id);
+  const index = selectedPlayers.findIndex(p => {
+    p.captain=false;
+    p.vicecaptain=false;
+    return p.player_id === player.player_id});
   if (index !== -1) {
       selectedPlayers.splice(index, 1);
   }
@@ -387,31 +395,28 @@ function getPlayerTypeStr(playerRole) {
             return 'other';
     }
 }
-// Add this code at the end of your JavaScript file
+
 document.getElementById("nextButton").addEventListener("click", () => {
-  // Get the modal and modal content elements
   const modal = document.getElementById("myModal");
   const modalBody = modal.querySelector(".modal-body");
-
-  // Clear the modal body content
   modalBody.innerHTML = "";
 
-  // Create a form for captain and vice-captain selection
-  const captainSelectionForm = document.createElement("form");
+  const captainSelectionForm = document.createElement("div");
   captainSelectionForm.id = "captainSelectionForm";
 
-  // Loop through the selected players and create radio buttons
   selectedPlayers.forEach((player, index) => {
       const playerDiv = document.createElement("div");
       playerDiv.className = "selected-player";
 
       const playerImage = document.createElement('img');
       playerImage.src = player.team === "New Zealand" ? 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player2.svg' : 'https://staticg.sportskeeda.com/cricket_images/fantasy_v2/player1.svg';
+
       const playerName = document.createElement("p");
       playerName.textContent = `${index + 1}. ${player.name} - ${player.team}`;
 
-      const playerSelection=document.createElement('div');
-      playerSelection.className="playerSelection";
+      const playerSelection = document.createElement('div');
+      playerSelection.className = "playerSelection";
+
       const captainRadio = document.createElement("input");
       captainRadio.type = "radio";
       captainRadio.name = "captain";
@@ -431,42 +436,84 @@ document.getElementById("nextButton").addEventListener("click", () => {
       const viceCaptainLabel = document.createElement("label");
       viceCaptainLabel.htmlFor = `viceCaptain${index}`;
       viceCaptainLabel.textContent = "Vice Captain";
+
       playerSelection.appendChild(captainRadio);
       playerSelection.appendChild(captainLabel);
       playerSelection.appendChild(viceCaptainRadio);
       playerSelection.appendChild(viceCaptainLabel);
-      // Append elements to the playerDiv
+
       playerDiv.appendChild(playerImage);
       playerDiv.appendChild(playerName);
       playerDiv.appendChild(playerSelection);
-      // Append the playerDiv to the form
       captainSelectionForm.appendChild(playerDiv);
   });
-  // Append the form to the modal body
-  modalBody.appendChild(captainSelectionForm);
-  // Display the modal
-   modal.style.display = "block";
-  // Handle form submission
-  captainSelectionForm.addEventListener("submit", function (e) {
-      e.preventDefault();
 
-      // Get the selected captain and vice-captain values
+  modalBody.appendChild(captainSelectionForm);
+  modal.style.display = "block";
+  const selectCaptain=document.getElementById('selectCaptain');
+  selectCaptain.addEventListener("click", ()=>{
+      // e.preventDefault();
       const captainValue = document.querySelector('input[name="captain"]:checked').value;
       const viceCaptainValue = document.querySelector('input[name="viceCaptain"]:checked').value;
-      allPlayer.forEach(player1=>{
-        player1.captain=false;
-        player1.vicecaptain=false;
-        if(player1.player_id=captainValue){
-          player1.captain=true;
-        }
-        if(player1.player_id=vicecaptain){
-          player1.vicecaptain=true;
-        }
-      })
-      // You can now use captainValue and viceCaptainValue as needed
-
+      selectedPlayers.forEach(player1 => {
+          player1.captain=false;
+          player1.vicecaptain=false;
+          if (player1.player_id == captainValue) {
+              player1.captain = true;
+          }
+          if (player1.player_id == viceCaptainValue) {
+              player1.vicecaptain = true;
+          }
+          //console.log(player1);
+      });
       // Close the modal
-      
       modal.style.display = "none";
+      showPlayerInSection(allPlayer);
+  
   });
+ 
 });
+
+function validatePlayersCount() {
+  if (selectedPlayers.length > 11) {
+      alert("You must select at least 11 players.");
+      return false;
+  }
+
+  const teamsCount = selectedPlayers.reduce((teamCount, player) => {
+      teamCount[player.team] = (teamCount[player.team] || 0) + 1;
+      return teamCount;
+  }, {});
+
+  for (const team in teamsCount) {
+      if (teamsCount[team] > 7) {
+          alert(`You can't select more than 7 players from ${team}.`);
+          return false;
+      }
+  }
+
+  const roleCounts = {
+      wk: 0,
+      bat: 0,
+      ar: 0,
+      bowl: 0,
+  };
+
+  selectedPlayers.forEach((player) => {
+      roleCounts[player.role]++;
+  });
+
+  if (
+      roleCounts.wk > 1 && roleCounts.wk < 4 &&
+      roleCounts.bat > 3 && roleCounts.bat < 6 &&
+      roleCounts.ar > 1 && roleCounts.ar < 4 &&
+      roleCounts.bowl > 3 && roleCounts.bowl < 6
+  ) {
+      alert("Please follow the player selection rules for each role.");
+      return false;
+  }
+
+  // If all validations pass, you can continue with the selected players.
+  // Add your code here to proceed with the selected players.
+  return true;
+}
