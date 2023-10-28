@@ -275,8 +275,27 @@ allPlayer.forEach(player => {
 });
 
 let selectedPlayers = [];
+// let headBtn = document.querySelectorAll('.headers button')
+// headBtn.forEach((val)=>
+// {
+  
+//   val.addEventListener('click',()=>
+//   {
+//     val.classList.toggle('choosed-header')
+//   });
+
+// })
 
 function displayPlayersByRole(role) {
+    //header color
+    const buttons = document.querySelectorAll('.role-button');
+    buttons.forEach(button => {
+        button.classList.remove('active-button');
+    });
+    // Add 'active-button' class to the clicked button
+    const activeButton = document.querySelector(`[data-role='${role}']`);
+    activeButton.classList.add('active-button');
+
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
     roleFilters[role].forEach(player => {

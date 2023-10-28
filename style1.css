@@ -216,4 +216,3 @@ tr.row1:nth-child(even) {
   .selected-player label {
     font-size: 14px;
   }
- /* satisfy  validatePlayersCount function then show  */

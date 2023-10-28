@@ -13,11 +13,11 @@
     <div class="main">
         <div class="player-details">
             <div class="headers">
-               <button onclick="displayPlayersByRole('wk')">Wicket keeper</button>
-               <button onclick="displayPlayersByRole('bat')">Batsman</button>
-               <button onclick="displayPlayersByRole('ar')">All rounder</button>
-               <button onclick="displayPlayersByRole('bowl')">Bowler</button>
-            </div>
+                <button onclick="displayPlayersByRole('wk')" class="role-button" data-role="wk">Wicket keeper</button>
+                <button onclick="displayPlayersByRole('bat')" class="role-button" data-role="bat">Batsman</button>
+                <button onclick="displayPlayersByRole('ar')" class="role-button" data-role="ar">All rounder</button>
+                <button onclick="displayPlayersByRole('bowl')" class="role-button" data-role="bowl">Bowler</button>
+              </div>
             <div class="content">
                 <table id="data">
                     <tbody id="table-body">
@@ -49,14 +49,12 @@
                  </div>
             </div>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" id="nextButton">
-                Next
+                Choose Captains
             </button>
          </div>
-
          <div class="modal" id="myModal">
             <div class="modal-dialog">
               <div class="modal-content">
-               
                    <!-- Modal Header -->
                   <div class="modal-header">
                     <h4 class="modal-title">Selected Players:</h4>
@@ -67,10 +65,8 @@
                   </div>
                   <!-- Modal footer -->
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-" data-bs-dismiss="modal" id="selectCaptain">Save</button>
-
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="selectCaptain">Save</button>
                   </div>
-               
               </div>
             </div>
           </div>
