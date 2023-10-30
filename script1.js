@@ -275,11 +275,6 @@ let data={
 // Rest of your JavaScript code, including functions like displayPlayersByRole, togglePlayerSelection, and more...
 
 
-
-
-
-
-
   const allPlayer = [];
   let teamData = data['data']['teams'];
   
@@ -428,20 +423,28 @@ selectCaptain.addEventListener("click", ()=>{
     }
 } */
 
+/* // Example usage:
+if (validateSelectedPlayers(selectedPlayers)) {
+  console.log("Team composition is valid.");
+} else {
+  console.log("Team composition is invalid.");
+} */
+let teamsCount={};
 function validatePlayersCount(player,role){
     if (selectedPlayers.length >= 11) {
         alert("You must select at least 11 players.");
         return false;
     }
-    const teamsCount = selectedPlayers.reduce((teamCount, player) => {
+     teamsCount = selectedPlayers.reduce((teamCount, player) => {
         teamCount[player.team] = (teamCount[player.team] || 0) + 1;
         return teamCount;
     }, {});
     for (const team in teamsCount) {
-        if (teamsCount[team] >= 7) {
+        if (teamsCount[team] >= 7&&player.team==teamsCount[team]) {
             alert(`You can't select more than 7 players from ${team}.`);
             return false;
         }
+
     }
     const roleCounts = {
         wk: 0,
@@ -452,18 +455,7 @@ function validatePlayersCount(player,role){
     selectedPlayers.forEach((player) => {
         roleCounts[player.role]++;
     });
-    /*  if (
-        roleCounts.wk > 1 && roleCounts.wk < 3 ||
-        roleCounts.bat > 3 && roleCounts.bat < 5 ||
-        roleCounts.ar > 1 && roleCounts.ar < 3 ||
-        roleCounts.bowl > 3 && roleCounts.bowl < 5
-    ) {
-        alert("Please follow the player selection rules for each role.");
-        return false;
-    }   */
-    // If all validations pass, you can continue with the selected players.
-    //showPlayerInSection(allPlayer,row);
-     togglePlayerSelection(player,role);
+    togglePlayerSelection(player,role);
     updateSelectedPlayers();
     updateChoosedPlayerSection();  
     return true;
@@ -489,6 +481,7 @@ roleFilters[role].forEach(player => {
         if(player.visible==true){
             removePlayer(player);
         }
+        
         validatePlayersCount(player,role);
         /*  togglePlayerSelection(player,role);
         updateSelectedPlayers();
@@ -509,7 +502,6 @@ roleFilters[role].forEach(player => {
 }
 
 function togglePlayerSelection(player,role) {
-    
     player.visible = !player.visible;
     displayPlayersByRole(role);
 }

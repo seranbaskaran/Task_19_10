@@ -275,17 +275,6 @@ allPlayer.forEach(player => {
 });
 
 let selectedPlayers = [];
-// let headBtn = document.querySelectorAll('.headers button')
-// headBtn.forEach((val)=>
-// {
-  
-//   val.addEventListener('click',()=>
-//   {
-//     val.classList.toggle('choosed-header')
-//   });
-
-// })
-
 function displayPlayersByRole(role) {
     //header color
     const buttons = document.querySelectorAll('.role-button');
@@ -302,21 +291,70 @@ function displayPlayersByRole(role) {
         const row = document.createElement('tr');
         row.setAttribute('class', 'row1');
         row.addEventListener('click', () => {
-            if(player.visible==true){
-              validatePlayersCount();
+          /*   if(player.visible==true){
+              //validatePlayersCount();
               player.visible=false;
               displayPlayersByRole(role);
-              showPlayerInSection(allPlayer);
+
+                showPlayerInSection(allPlayer);
+              
               row.style.backgroundColor='none';
-              removePlayer(player);
+              //removePlayer(player);
+              checkCount();
               return;
             }
-            validatePlayersCount();
+            //validatePlayersCount();
             player.visible=true;
             player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
-            selectedPlayers.push(player);
-            showPlayerInSection(allPlayer);
+            //selectedPlayers.push(player);
+            if(roleCounts.teamAct<7&&roleCounts.teamBct<7){ 
+                //player.visible=false;
+                showPlayerInSection(allPlayer);
+            }
+            else{
+                player.visible=false;
+                player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
+                showPlayerInSection(allPlayer);
+            }
             //console.log(player)
+            checkCount(); */
+            allPlayer.forEach((val)=>
+            {
+                if(val.player_id==player.player_id)
+                    {  
+                    if(val.team=='New Zealand'&&roleCounts.teamAct<=6)
+                        {
+                            val.visible==true?val.visible=false:val.visible=true
+                        }
+                    else if(val.team=='Afghanistan'&&roleCounts.teamBct<=6)
+                        {
+                            val.visible==true?val.visible=false:val.visible=true
+                        }
+                    else
+                    {
+                        if(player.visible==true)
+                            {
+                                val.visible=false
+                            }
+                    }
+                    checkCount();
+                    console.log(roleCounts.teamAct)
+                }}
+            )
+            showPlayerInSection(allPlayer);
+            displayPlayersByRole(role);
+            if(roleCounts.teamAct+roleCounts.teamBct>11){
+              showErrorMessage('you can\'t select more than 11 player');
+            }
+            if(roleCounts.teamAct>=7)
+            {
+              alert(`You can't select more than 7 players from ${player.team}.`);
+              //showErrorMessage();
+            }
+            if(roleCounts.teamBct>=7){
+              //showErrorMessage();
+              alert(`You can't select more than 7 players from ${player.team}.`)
+            }
         });
         player.visible==true?row.style.backgroundColor='rgba(151,170,51,0.4)':row.style.backgroundColor='none'
         const playerTypeImage = getPlayerTypeImage(player.role);
@@ -390,7 +428,7 @@ function showPlayerInSection(allPlayer) {
   })
 }
 
-function removePlayer(player) {
+/* function removePlayer(player) {
   const index = selectedPlayers.findIndex(p => {
     p.captain=false;
     p.vicecaptain=false;
@@ -398,7 +436,7 @@ function removePlayer(player) {
   if (index !== -1) {
       selectedPlayers.splice(index, 1);
   }
-}
+} */
 // Function to get the player type
 function getPlayerTypeStr(playerRole) {
     switch (playerRole) {
@@ -423,8 +461,10 @@ document.getElementById("nextButton").addEventListener("click", () => {
   const captainSelectionForm = document.createElement("div");
   captainSelectionForm.id = "captainSelectionForm";
 
-  selectedPlayers.forEach((player, index) => {
-      const playerDiv = document.createElement("div");
+  allPlayer.forEach((player, index) => {
+      if(player.visible==true)
+      {
+        const playerDiv = document.createElement("div");
       playerDiv.className = "selected-player";
 
       const playerImage = document.createElement('img');
@@ -465,6 +505,7 @@ document.getElementById("nextButton").addEventListener("click", () => {
       playerDiv.appendChild(playerName);
       playerDiv.appendChild(playerSelection);
       captainSelectionForm.appendChild(playerDiv);
+      }
   });
 
   modalBody.appendChild(captainSelectionForm);
@@ -474,7 +515,7 @@ document.getElementById("nextButton").addEventListener("click", () => {
       // e.preventDefault();
       const captainValue = document.querySelector('input[name="captain"]:checked').value;
       const viceCaptainValue = document.querySelector('input[name="viceCaptain"]:checked').value;
-      selectedPlayers.forEach(player1 => {
+      allPlayer.forEach(player1 => {
           player1.captain=false;
           player1.vicecaptain=false;
           if (player1.player_id == captainValue) {
@@ -488,51 +529,41 @@ document.getElementById("nextButton").addEventListener("click", () => {
       // Close the modal
       modal.style.display = "none";
       showPlayerInSection(allPlayer);
-  
   });
- 
 });
 
-function validatePlayersCount() {
-  if (selectedPlayers.length > 11) {
-      alert("You must select at least 11 players.");
-      return false;
-  }
-
-  const teamsCount = selectedPlayers.reduce((teamCount, player) => {
-      teamCount[player.team] = (teamCount[player.team] || 0) + 1;
-      return teamCount;
-  }, {});
-
-  for (const team in teamsCount) {
-      if (teamsCount[team] > 7) {
-          alert(`You can't select more than 7 players from ${team}.`);
-          return false;
+let roleCounts = {
+  wk: 0,bat: 0,ar: 0,bowl: 0,teamAct:0,teamBct:0
+};
+function checkCount(){
+    for( let i in roleCounts){
+      roleCounts[i]=0;
+    }
+    allPlayer.forEach((player)=>{
+      if(player.visible){
+        roleCounts[player.role]++
+        if(player.team=='New Zealand')
+        {
+          roleCounts.teamAct+=1
+        }
+        else{roleCounts.teamBct+=1}
       }
-  }
+    })
+    console.log(roleCounts);
+}
 
-  const roleCounts = {
-      wk: 0,
-      bat: 0,
-      ar: 0,
-      bowl: 0,
-  };
+function showErrorMessage(){
+  let errorDiv=document.getElementById('error-message');
+  errorDiv.style.display='block';
+  
+}
+//here roleCounts Object is there if wk teamAct value is greater then 7 then teamAct value is 
 
-  selectedPlayers.forEach((player) => {
-      roleCounts[player.role]++;
-  });
-
-  if (
-      roleCounts.wk > 1 && roleCounts.wk < 4 &&
-      roleCounts.bat > 3 && roleCounts.bat < 6 &&
-      roleCounts.ar > 1 && roleCounts.ar < 4 &&
-      roleCounts.bowl > 3 && roleCounts.bowl < 6
-  ) {
-      alert("Please follow the player selection rules for each role.");
-      return false;
-  }
-
-  // If all validations pass, you can continue with the selected players.
-  // Add your code here to proceed with the selected players.
-  return true;
+function validatePlayer(){
+  let playersModel={ wk: '1-4',bat: '3-6',ar: '1-4',bowl: '3-6'}
+  allPlayer.forEach((player)=>{
+    if(player.visible==true){
+      
+    }
+  })
 }
