@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <!-- Your HTML content here -->
+
+    <script>
+        // Define your data and initialize roleCounts and allPlayer as you mentioned
+
+        // ... (Your data and initialization code)
+
+        function checkCount() {
+            for (let i in roleCounts) {
+                roleCounts[i] = 0;
+            }
+            allPlayer.forEach((player) => {
+                if (player.visible) {
+                    roleCounts.totalCount += 1;
+                    roleCounts[player.role]++;
+                    if (player.team === 'New Zealand') {
+                        roleCounts.teamAct += 1;
+                    } else {
+                        roleCounts.teamBct += 1;
+                    }
+                }
+            });
+
+            // Output role counts for debugging
+            console.log(roleCounts);
+        }
+
+        function updatePlayerView(player) {
+            const row = document.querySelector(`[data-player-id="${player.player_id}"]`);
+            if (player.visible) {
+                row.style.backgroundColor = 'rgba(151, 170, 51, 0.4)';
+            } else {
+                row.style.backgroundColor = '';
+            }
+            showPlayerInSection(allPlayer);
+        }
+
+        // Add your displayPlayersByRole, getPlayerTypeImage, and other functions here
+
+        // ... (Your existing functions)
+
+        function playerSelectionHandler(player) {
+            if (player.visible === false) {
+                // Check role restrictions
+                let count = 0;
+                allPlayer.forEach((val) => {
+                    if (val.visible === true) {
+                        count++;
+                    }
+                });
+
+                if (count >= 11) {
+                    alert("Cannot select more than 11 players");
+                    return;
+                }
+
+                count = 0;
+                allPlayer.forEach((val) => {
+                    if (val.visible === true && val.role === player.role) {
+                        count++;
+                    }
+                });
+
+                switch (player.role) {
+                    case 'wk':
+                        if (count >= 4) {
+                            alert('Cannot select more wicket keepers');
+                            return;
+                        }
+                        break;
+                    case 'bat':
+                        if (count >= 6) {
+                            alert('Cannot select more batsmen');
+                            return;
+                        }
+                        break;
+                    case 'ar':
+                        if (count >= 4) {
+                            alert('Cannot select more all-rounders');
+                            return;
+                        }
+                        break;
+                    case 'bowl':
+                        if (count >= 6) {
+                            alert('Cannot select more bowlers');
+                            return;
+                        }
+                        break;
+                }
+
+                count = 0;
+                allPlayer.forEach((val) => {
+                    if (val.visible === true && val.team === player.team) {
+                        count++;
+                    }
+                });
+                if (count >= 7) {
+                    alert('Cannot select more players from the same team');
+                    return;
+                }
+
+                player.visible = true;
+                updatePlayerView(player);
+                checkCount();
+                validateCricketTeam(allPlayer);
+            } else {
+                player.visible = false;
+                updatePlayerView(player);
+                checkCount();
+                validateCricketTeam(allPlayer);
+            }
+        }
+    </script>
+</body>
+</html>
